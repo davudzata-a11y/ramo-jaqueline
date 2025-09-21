@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ramo para Jaqueline - Esposita</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #fffbe6 0%, #f7e9a0 100%);
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  h1 {
+    margin-top: 20px;
+    color: #5a4d0e;
+    font-size: 32px;
+    text-shadow: 1px 1px 3px #bba600;
+    user-select: none;
+  }
+  canvas {
+    margin-top: 20px;
+    border-radius: 15px;
+    background: #fffde7;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border: 3px solid #e6d850;
+  }
+</style>
+</head>
+<body>
+
+<h1>🌼 Ramo para Jaqueline – Esposita 🌸</h1>
+<canvas id="canvas" width="900" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+ctx.lineCap = 'round';
+
+// Pétalo con degradado
+function dibujarPetalo(x, y, tamaño, angulo, color1, color2) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angulo);
+
+  const grad = ctx.createRadialGradient(0, -tamaño*0.5, tamaño*0.1, 0, -tamaño*0.5, tamaño);
+  grad.addColorStop(0, color1);
+  grad.addColorStop(1, color2);
+
+  ctx.beginPath();
+  ctx.fillStyle = grad;
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 2;
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(tamaño*0.8, -tamaño*0.4, tamaño, -tamaño*1.1, 0, -tamaño);
+  ctx.bezierCurveTo(-tamaño, -tamaño*1.1, -tamaño*0.8, -tamaño*0.4, 0, 0);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// Flor amarilla con pétalos
+function dibujarFlorAmarilla(x, y, tamaño, oscilacion) {
+  const numPetalos = 12;
+  for(let i=0; i<numPetalos; i++){
+    const angulo = (i*2*Math.PI)/numPetalos + oscilacion;
+    dibujarPetalo(x, y, tamaño, angulo, '#FFEB3B', '#FBC02D');
+  }
+  // Centro con sombra
+  ctx.beginPath();
+  const grad = ctx.createRadialGradient(x, y, tamaño*0.1, x, y, tamaño*0.4);
+  grad.addColorStop(0, '#FF6F00');
+  grad.addColorStop(1, '#F57C00');
+  ctx.fillStyle = grad;
+  ctx.shadowColor = 'rgba(255,111,0,0.7)';
+  ctx.shadowBlur = 15;
+  ctx.arc(x, y, tamaño*0.35, 0, 2*Math.PI);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+// Flor de loto rosa
+function dibujarFlorLoto(x, y, tamaño, oscilacion) {
+  const numPetalos = 10;
+  for(let i=0; i<numPetalos; i++){
+    const angulo = (i*2*Math.PI)/numPetalos + oscilacion;
+    dibujarPetalo(x, y, tamaño, angulo, '#F8BBD0', '#F48FB1');
+  }
+  ctx.beginPath();
+  const grad = ctx.createRadialGradient(x, y, tamaño*0.1, x, y, tamaño*0.3);
+  grad.addColorStop(0, '#FFF59D');
+  grad.addColorStop(1, '#FBC02D');
+  ctx.fillStyle = grad;
+  ctx.shadowColor = 'rgba(251,192,45,0.6)';
+  ctx.shadowBlur = 12;
+  ctx.arc(x, y, tamaño*0.25, 0, 2*Math.PI);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+// Tallo curvado que termina en el nudo común del ramo
+function dibujarTallo(x, y, altura, offset, nudoX, nudoY) {
+  ctx.beginPath();
+  ctx.strokeStyle = '#2e7d32';
+  ctx.lineWidth = 8;
+  ctx.shadowColor = 'rgba(46,125,50,0.7)';
+  ctx.shadowBlur = 8;
+
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(
+    x + offset * 10, 
+    y + altura * 0.3, 
+    nudoX + offset * 5, 
+    nudoY - 60 + offset * 10, 
+    nudoX, 
+    nudoY
+  );
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+}
+
+// Moño grande y visible que ata el ramo
+function dibujarMono(x, y, tamaño) {
+  ctx.save();
+  ctx.translate(x, y);
+  
+  // Cintas del moño más grandes
+  ctx.fillStyle = '#d32f2f';
+  ctx.strokeStyle = '#7b0000';
+  ctx.lineWidth = 4;
+  ctx.shadowColor = 'rgba(211,47,47,0.9)';
+  ctx.shadowBlur = 15;
+
+  // Lazo izquierdo
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(-tamaño*1.8, -tamaño*0.8, -tamaño*0.8, -tamaño*2, 0, -tamaño*1.2);
+  ctx.bezierCurveTo(-tamaño*0.3, -tamaño*1.6, -tamaño*1.3, -tamaño*1.4, 0, 0);
+  ctx.fill();
+  ctx.stroke();
+
+  // Lazo derecho
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(tamaño*1.8, -tamaño*0.8, tamaño*0.8, -tamaño*2, 0, -tamaño*1.2);
+  ctx.bezierCurveTo(tamaño*0.3, -tamaño*1.6, tamaño*1.3, -tamaño*1.4, 0, 0);
+  ctx.fill();
+  ctx.stroke();
+
+  // Nudo central
+  ctx.beginPath();
+  ctx.fillStyle = '#b71c1c';
+  ctx.shadowBlur = 20;
+  ctx.arc(0, -tamaño*1.1, tamaño*0.6, 0, 2*Math.PI);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+}
+
+// Mariposa simple para detalle
+function dibujarMariposa(x, y, tamaño, color1, color2) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Alas
+  ctx.beginPath();
+  const grad = ctx.createRadialGradient(-tamaño*0.5, 0, tamaño*0.1, 0, 0, tamaño*0.6);
+  grad.addColorStop(0, color1);
+  grad.addColorStop(1, color2);
+  ctx.fillStyle = grad;
+  ctx.shadowColor = 'rgba(255,105,180,0.5)';
+  ctx.shadowBlur = 8;
+
+  ctx.ellipse(-tamaño*0.5, 0, tamaño*0.6, tamaño*0.9, 0, 0, 2 * Math.PI);
+  ctx.ellipse(tamaño*0.5, 0, tamaño*0.6, tamaño*0.9, 0, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Cuerpo
+  ctx.beginPath();
+  ctx.fillStyle = '#4a148c';
+  ctx.shadowBlur = 5;
+  ctx.lineWidth = 3;
+  ctx.moveTo(0, -tamaño*0.9);
+  ctx.lineTo(0, tamaño*0.9);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+}
+
+// Sol simple para detalle
+function dibujarSol(x, y, tamaño) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Círculo central
+  const grad = ctx.createRadialGradient(0, 0, tamaño*0.2, 0, 0, tamaño);
+  grad.addColorStop(0, '#FFD54F');
+  grad.addColorStop(1, '#FFB300');
+  ctx.fillStyle = grad;
+  ctx.shadowColor = 'rgba(255,193,7,0.7)';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(0, 0, tamaño*0.6, 0, 2*Math.PI);
+  ctx.fill();
+
+  // Rayos
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#FFB300';
+  for(let i=0; i<12; i++){
+    const ang = (i*2*Math.PI)/12;
+    const x1 = Math.cos(ang) * tamaño*0.7;
+    const y1 = Math.sin(ang) * tamaño*0.7;
+    const x2 = Math.cos(ang) * tamaño*1.1;
+    const y2 = Math.sin(ang) * tamaño*1.1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+}
+
+// Flores y sus posiciones
+const flores = [
+  { x: 180, y: 160, tamaño: 70, tipo: 'amarilla', offset: 0 },
+  { x: 270, y: 130, tamaño: 65, tipo: 'amarilla', offset: 0.2 },
+  { x: 360, y: 170, tamaño: 70, tipo: 'amarilla', offset: -0.2 },
+  { x: 460, y: 145, tamaño: 55, tipo: 'loto', offset: 0.1 },
+  { x: 540, y: 130, tamaño: 55, tipo: 'loto', offset: -0.1 },
+  { x: 630, y: 160, tamaño: 60, tipo: 'loto', offset: 0.15 },
+];
+
+// Posición del nudo del ramo (donde terminan los tallos)
+const nudoX = 400;
+const nudoY = 460;
+
+// Animación
+let tiempo = 0;
+function animar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Dibujar tallos
+  flores.forEach((flor, i) => {
+    dibujarTallo(flor.x, flor.y + flores[i].tamaño * 0.8, 300, i - flores.length/2, nudoX, nudoY);
+  });
+
+  // Dibujar flores
+  flores.forEach(flor => {
+    if(flor.tipo === 'amarilla'){
+      dibujarFlorAmarilla(flor.x, flor.y, flor.tamaño, tiempo + flor.offset);
+    } else {
+      dibujarFlorLoto(flor.x, flor.y, flor.tamaño, tiempo + flor.offset);
+    }
+  });
+
+  // Dibujar moño (más grande)
+  dibujarMono(nudoX, nudoY, 50);
+
+  // Detalles: mariposa y sol
+  dibujarMariposa(750, 120, 25, '#FF69B4', '#FF1493');
+  dibujarSol(750, 520, 35);
+
+  // Texto final
+  ctx.font = "28px 'Comic Sans MS', cursive";
+  ctx.fillStyle = '#7b3f00';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(123, 63, 0, 0.4)';
+  ctx.shadowBlur = 4;
+  ctx.fillText("Con cariño de su esposo", canvas.width / 2, nudoY + 90);
+  ctx.shadowBlur = 0;
+
+  tiempo += 0.02;
+  requestAnimationFrame(animar);
+}
+
+animar();
+</script>
+
+</body>
+</html>
